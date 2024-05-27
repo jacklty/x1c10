@@ -1,7 +1,7 @@
 ---
 services:
-  unifi-network-application:
-    image: lscr.io/linuxserver/unifi-network-application:latest
+  unifi-controller:
+    image: linuxserver/unifi-network-application:arm64v8-latest
     container_name: unifi-network-application
     environment:
       - PUID=1000
@@ -17,7 +17,7 @@ services:
       #- MONGO_TLS= #optional
       #- MONGO_AUTHSOURCE= #optional
     volumes:
-      - /path/to/unifi-network-application/data:/config
+      - ./config:/config
     ports:
       - 8443:8443
       - 3478:3478/udp
@@ -28,4 +28,11 @@ services:
       #- 8880:8880 #optional
       #- 6789:6789 #optional
       #- 5514:5514/udp #optional
+    restart: unless-stopped
+  unifi-db:
+    image: docker.io/mongo:7.0-nanoserver
+    container_name: unifi-db
+    volumes:
+      - ./data:/data/db
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     restart: unless-stopped
